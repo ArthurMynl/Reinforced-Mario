@@ -1,0 +1,6 @@
+gym-super-mario-bros==7.4.0
+gym==0.25.1
+pip==23.0.1
+pyglet==1.5.11
+PyOpenGL==3.1.7
+PyOpenGL-accelerate==3.1.7
