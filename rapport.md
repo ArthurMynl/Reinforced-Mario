@@ -12,6 +12,8 @@ Précisions :
 Les supports de présentation sont à déposer en amont des soutenances. Chaque équipe disposera de 15 min de présentation suivi de 10 min de questions. Attention à la qualité du discours, des supports et à la répartition équitable du temps entre les membres de l'équipe.
 Pour le dossier, visez une dizaine de pages. -->
 
+<!-- A tester : pandoc pour passer de Markdown à pdf -->
+
 # Rapport de projet - Reinforced Mario
 
 ## par Arthur Meyniel, Hugo Fouché et Aurelie Chamouleau
@@ -20,39 +22,107 @@ Pour le dossier, visez une dizaine de pages. -->
 
 <!-- Table des matières -->
 
+
+<!-- Outline finale -->
 ## Introduction
 
 Le jeu Super Mario Bros, depuis sa sortie dans les années 1980, a captivé des millions de joueurs à travers le monde. Au-delà de son succès commercial, ce jeu iconique présente un intérêt particulier pour le domaine de l'intelligence artificielle, spécialement dans l'étude de l'apprentissage par renforcement.
 
-### Contexte et Pertinence du Jeu Super Mario Bros pour l'Apprentissage par Renforcement
-
 Super Mario Bros offre un environnement complexe et dynamique, idéal pour tester et développer des algorithmes d'apprentissage par renforcement. Avec ses niveaux variés, ses obstacles imprévisibles et ses objectifs multiples, le jeu pose des défis qui imitent des problèmes réels dans le domaine de l'IA. La capacité d'un agent à apprendre et à s'adapter dans cet environnement peut fournir des insights précieux sur les applications de l'apprentissage par renforcement dans des situations complexes.
-
-### Introduction à l'Apprentissage par Renforcement et le Choix du PPO
-
-L'apprentissage par renforcement est une branche de l'intelligence artificielle où un agent apprend à prendre des décisions en interagissant avec son environnement. L'objectif est de maximiser une certaine notion de récompense cumulative. Parmi les différents algorithmes existants, le Proximal Policy Optimization (PPO) se distingue par sa robustesse et sa capacité à gérer efficacement des environnements à grande échelle, comme Super Mario Bros. Le PPO, reconnu pour sa facilité d'implémentation et sa stabilité d'apprentissage, est donc un choix naturel pour notre projet.
 
 ## Explication et Formalisation du Problème
 
-### Super Mario Bros : Un Défi pour l'Intelligence Artificielle
+## Description des données
 
-Super Mario Bros, un jeu de plateforme développé par Nintendo, est caractérisé par sa structure de niveaux variés, ses ennemis divers, et ses mécaniques de jeu dynamiques. Chaque niveau présente un ensemble unique de défis, allant de la navigation à travers des plateformes en mouvement à l'évitement d'ennemis, tout en collectant des pièces et en atteignant le drapeau de fin de niveau. Ces éléments rendent Super Mario Bros particulièrement adapté pour tester les capacités d'adaptation et d'apprentissage d'un agent IA.
+Ce projet tire parti des données fournies par `gym-super-mario-bros`, une bibliothèque basée sur la technologie `Gymnasium` développée par OpenAI. L'environnement `SuperMarioBros-v0` est utilisé pour la récupération des données de jeu, qui se présentent sous deux formes principales :
 
-### Objectifs de l'Agent dans Super Mario Bros
+1. Images du Jeu :
+    - Chaque image de jeu est capturée avec une résolution de 240x256 pixels, en format couleur RGB.
+    - Ces images sont stockées sous forme de tableaux NumPy tridimensionnels de taille 240x256x3. Chaque valeur au sein de ces tableaux représente une intensité de couleur, variant de 0 à 255.
 
-L'objectif principal de notre agent IA, entraîné à l'aide de l'algorithme Proximal Policy Optimization (PPO), est de maximiser son score en complétant les niveaux le plus rapidement possible tout en minimisant les erreurs, telles que tomber dans des pièges ou être touché par des ennemis. Ceci est réalisé en apprenant à naviguer dans les différents niveaux, en prenant des décisions basées sur les états actuels du jeu, représentés par des images traitées. Le code fourni met en œuvre cette approche en utilisant la librairie gym_super_mario_bros, avec des actions simplifiées via SIMPLE_MOVEMENT et un traitement des images pour optimiser la performance de l'agent.
+2. Dictionnaire de l'État du Jeu :
+    - Les données incluent un dictionnaire exhaustif qui renferme des informations détaillées sur l'état actuel du jeu. Ce dictionnaire comprend :
+        - La position de Mario, le score, le temps restant, etc.
+        - La récompense obtenue lors de l'étape précédente.
+        - Un indicateur booléen signalant si le jeu est terminé.
+        - Des informations complémentaires sur le niveau, telles que le nombre de pièces collectées et le temps restant.
 
-### Hypothèses et Limitations de l'Étude
+### Reward function
 
-Notre approche repose sur plusieurs hypothèses clés :
+La fonction de récompense, élément clé de cet environnement, est conçue autour de l'objectif principal du jeu : maximiser la progression horizontale (à droite) de l'agent, aussi rapidement que possible, tout en évitant la mort. Cette fonction se compose de trois variables distinctes :
 
-Simplification visuelle : Le traitement des images en noir et blanc et leur réduction en taille visent à simplifier l'espace des caractéristiques sans perdre les informations essentielles pour la prise de décision.
-Frame Stacking : L'empilement de plusieurs images consécutives fournit une notion de mouvement et de temporalité, essentielle pour anticiper les actions futures.
-Cependant, cette étude comporte des limitations. Premièrement, la simplification des images et la réduction de la complexité du jeu pourraient ne pas capturer toutes les nuances requises pour une généralisation complète à des scénarios plus complexes. Deuxièmement, l'efficacité de l'algorithme PPO dépend fortement du réglage des hyperparamètres, qui peut nécessiter une exploration et un ajustement intensifs. Enfin, notre étude se concentre sur une version spécifique de Super Mario Bros, ce qui pourrait limiter la généralité des conclusions à d'autres versions ou à des jeux similaires.
+1. v - Différence de Position Horizontale : 
+    - v = x1 - x0, où x0 et x1 représentent respectivement la position horizontale de Mario avant et après un pas de temps.
+    - Une valeur positive (v > 0) indique un mouvement vers la droite, tandis qu'une valeur négative (v < 0) signale un mouvement vers la gauche.
 
-### Description des données
+2. c - Différence Temporelle :
+    - c = c0 - c1, où c0 et c1 sont les lectures de l'horloge du jeu avant et après un pas de temps.
+    - Cette variable sert de pénalité pour dissuader l'agent de rester immobile.
 
-Les données sont les images du jeu. Elles sont récupérées grâce à la librairie gym-super-mario-bros. Elles sont ensuite traitées pour être utilisées par l'algorithme PPO. Les images sont en couleur et de taille 240x256. Nous avons décidé de les convertir en images en noir et blanc de taille 84x84 afin de diminuer le nombre de dimensions, et donc de paramètres de l'algorithme. De plus, nous appliquons une méthode nommée Frame Stacking, qui consiste à empiler les 4 dernières images pour avoir une notion de mouvement. En effet, une seule image ne permet pas de savoir si Mario se déplace vers la droite ou vers la gauche. Enfin, nous normalisons les images pour que les valeurs soient comprises entre 0 et 1.
+3. d - Pénalité de Mort :
+    - Attribue une pénalité significative en cas de décès de l'agent, pour encourager l'évitement de la mort.
+    - d = 0 en cas de survie et d = -15 en cas de décès.
 
-### Protocole expérimental
+La récompense totale, r, est alors calculée comme la somme de ces trois composantes : r = v + c + d. Elle est limitée à l'intervalle [-15, 15].
+
+### Dictionnaire `info`
+
+Le dictionnaire `info`, retourné par la méthode `step`, contient des clés informatives cruciales, telles que :
+
+- `coins` : Le nombre de pièces collectées.
+- `flag_get` : Booléen indiquant si Mario a atteint un drapeau ou une hache.
+- `life` : Le nombre de vies restantes.
+- `score` : Le score cumulatif du jeu.
+- `stage` : L'étape actuelle du jeu.
+- `status` : Le statut de Mario (petit, grand, avec des boules de feu).
+- `time` : Le temps restant sur l'horloge du jeu.
+- `world` : Le monde actuel du jeu.
+- `x_pos` : La position horizontale de Mario dans l'étape.
+- `y_pos` : La position verticale de Mario dans l'étape.
+
+Les données sont mises à jour à chaque frame, offrant ainsi une vue dynamique et détaillée du déroulement du jeu en temps réel.
+
+
+## Présentation du travail effectué
+
+Le travail est réalisé en plusieurs parties :
+- Une étude expérimentale pour comprendre les données récupérées en entrées
+- Un choix d'algorithmes d'apprentissage par renforcement -> 2 algorithmes ont été choisis : PPO et DDQN
+- Pour chaque algorithme, un nettoyage des données a été réalisé
+- Pour chaque algorithme, les impacts des paramètres ont été étudiés
+- Pour chaque algorithme, les résultats ont été analysés
+
+### PPO
+
+#### Principe
+
+
+
+#### Nettoyage des données et prétraitement
+
+Comme expliqué dans la partie [Description des données](#description-des-données), les données récupérées sont des images de 240x256 pixels en RGB. Cela nous est fourni sous forme d'un tableau numpy de taille 240x256x3, avec des valeurs comprises entre 0 et 255.
+
+Une image du jeu est donc de taille considérable, et il est difficile de faire de l'apprentissage avec une image de cette taille. Il est donc nécessaire de réduire la taille des données en entrée.
+
+Pour cela, nous avons réfléchi à plusieurs solutions :
+- Réduire la taille de l'image en la redimensionnant
+- Transformer l'image en noir et blanc afin de réduire le nombre de canaux et donc avoir une image de taille 240x256x1
+
+
+##### Sans filtre
+##### Avec filtre
+#### Paramétrages
+#### Résultats
+
+### DDQN
+#### Principe
+#### Nettoyage des données
+#### Paramétrages
+#### Résultats
+
+## Comparaison des résultats
+
+## Discussion et ouverture
+
+## Bibliographie
 
