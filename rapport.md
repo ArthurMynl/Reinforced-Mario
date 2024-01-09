@@ -106,8 +106,17 @@ Une image du jeu est donc de taille considérable, et il est difficile de faire 
 
 Pour cela, nous avons réfléchi à plusieurs solutions :
 - Réduire la taille de l'image en la redimensionnant
-- Transformer l'image en noir et blanc afin de réduire le nombre de canaux et donc avoir une image de taille 240x256x1
+- Transformer l'image en noir et blanc afin de réduire le nombre de canaux et donc avoir une image de taille 240x256x1. En effet, le jeu est en couleur, mais les couleurs n'ont pas d'importance pour l'apprentissage. De plus, cela permet de réduire la taille des données en entrée par 3.
 
+Nous avons commencé par passer l'image en noir et blanc comme ceci fait la plus grande différence en terme de taille de données. Puis nous avons effectué un prétraitement sur les données en entrée afin de faciliter l'apprentissage. Voici la comparaison entre une image de base et une image en noir et blanc :
+
+![Image de base](./assets/first_frame_color.png) ![Image en noir et blanc](./assets/first_frame_grayscale.png)
+
+De plus, afin d'aider notre modèle, plutôt que de lui envoyer une seule image en entrée, nous lui envoyons les 4 dernières images du jeu. Cela permet de donner du contexte à notre modèle, et de lui permettre de comprendre la vitesse et la direction du personnage et des ennemis du jeu.
+
+Voici un exemple de ce que reçoit notre modèle en entrée (4 premières images du jeu) :
+
+![Frame stack](./assets/frame_stack.png)
 
 ##### Sans filtre
 ##### Avec filtre
