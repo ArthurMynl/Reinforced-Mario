@@ -1,18 +1,16 @@
-import torch
-import gym_super_mario_bros
-from gym_super_mario_bros.actions import RIGHT_ONLY
-from agent import Agent
-from nes_py.wrappers import JoypadSpace
-from wrappers import apply_wrappers
-import os
-from utils import *
-import pyglet
-from torch.utils.tensorboard import SummaryWriter
-
-lib = pyglet.lib.load_library('GLU')
-print("lib ", lib)
-
 import ctypes.util
+import os
+
+import gym_super_mario_bros
+import pyglet
+import torch
+from agent import Agent
+from gym_super_mario_bros.actions import RIGHT_ONLY
+from nes_py.wrappers import JoypadSpace
+from torch.utils.tensorboard import SummaryWriter
+from utils import *
+from wrappers import apply_wrappers
+
 print(ctypes.util.find_library('GLU'))
 
 JoypadSpace.reset = lambda self, **kwargs: self.env.reset(**kwargs)
@@ -55,8 +53,6 @@ if not SHOULD_TRAIN:
     agent.eps_min = 0.0
     agent.eps_decay = 0.0
 
-# Créer un objet SummaryWriter, spécifiant le dossier où les logs seront sauvegardés
-writer = SummaryWriter('logs')
 
 env.reset()
 next_state, reward, done, trunc, info = env.step(action=0)
@@ -77,16 +73,6 @@ for i in range(NUM_OF_EPISODES):
 
         state = new_state
 
-    # Enregistrez les informations pour TensorBoard
-    writer.add_scalar('Total Reward', total_reward, i)
-    writer.add_scalar('Epsilon', agent.epsilon, i)
-    writer.add_scalar('Replay Buffer Size', len(agent.replay_buffer), i)
-    writer.add_scalar('Learn Step Counter', agent.learn_step_counter, i)
-    
-    # Ajoutez d'autres paramètres que vous souhaitez surveiller
-    # Exemples :
-    # writer.add_scalar('Average Loss', your_loss_value, i)
-    # writer.add_scalar('Average Episode Length', your_episode_length, i)
     print("Total reward:", total_reward, "Epsilon:", agent.epsilon, "Size of replay buffer:", len(agent.replay_buffer),
           "Learn step counter:", agent.learn_step_counter)
     if SHOULD_TRAIN and (i + 1) % CKPT_SAVE_INTERVAL == 0:
@@ -94,8 +80,5 @@ for i in range(NUM_OF_EPISODES):
     
     print("Total reward:", total_reward)
 
-
-# Fermez le writer à la fin de l'entraînement
-writer.close()
 
 env.close()
