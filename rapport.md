@@ -179,7 +179,21 @@ Voici un exemple de ce que reçoit notre modèle en entrée (4 premières images
 
 ##### Sans filtre
 
-<!-- Résultats sans filtre à mettre (screen ) -->
+Voici l'`explained_variance` de notre modèle à la fin de son entraînement lorsqu'il n'y avait pas de filtre de canny appliqué aux données d'entrées.
+
+<center>
+    <figure class="image">
+        <img src="./assets/without_canny_explained_variance.png" alt="Résultat sans filtre">
+        <figcaption>Résultat sans filtre de Canny</figcaption>
+    </figure>
+</center>
+
+La courbe ci-dessus représente l'`explained_variance` durant l'apprentissage.
+Cette valeur nous permet de savoir à quel point notre modèle prédit bien ses actions. Plus l'`explained_variance` se rapproche de 1, plus sa prédiction est bonne et apporte de bons résultats. A l'inverse, plus cette valeur se rapproche de 0 et des valeurs négatives, plus notre modèle aurait de tout aussi bons voire meilleures résultats en effectuant une action aléatoire.
+
+Nous ne voyons pas ici le début de l'apprentissage où la montée était grande et rapide. Nous pouvons en revanche constater que nous arrivions à un plateau où malgré un entraînement de plus en plus long, les avancées de notre modèle n'étaient pas significatifs.
+
+Avec une `explained_variance` à environ 0.92, Mario était globalement bon et allait loin dans le niveau mais son niveau n'était pas suffisant pour le réussir ou pour bien appliquer ce qu'il a appris aux autres niveaux.
 
 ##### Avec filtre
 
@@ -203,8 +217,6 @@ Après avoir réalisé un training de plus de 10h (presque 4 000 000 d'itératio
     </figure>
 </center>
 
-Ces courbes ci-dessus représentent l'`explained_variance` durant l'apprantissage.
-Cette valeur nous permet de savoir à quel point notre modèle prédit bien ses actions. Plus l'`explained_variance` se rapproche de 1, plus sa prédiction est bonne et apporte de bons résultats. A l'inverse, plus cette valeur se rapproche de 0 et des valeurs négatives, plus notre modèle aurait de tout aussi bons voire meilleures résultats en effectuant une action aléatoire.
 Nous remarquons donc avec ces courbes, que l'`explained_variance` s'est vite améliorée au début, puis a atteint un plateau vers 500k où l'apprentissage est devenu un peu plus lent. La valeur finale étant de 0.81, la prédiction du modèle est bonne même si elle pourrait encore être améliorée.
 
 Après tests, on remarque comme présenté pendant la présentation orale que le filtre de Canny permet d'améliorer les performances de notre modèle. En effet, on remarque que le modèle converge plus rapidement (apprentissage nettement plus rapide des tuyaux à environ 200 000 itérations) et que les performances obtenues à la fin sont meilleures. Avec ce modèle, il est commun que Mario arrive à la fin du niveau 1-1, et il semble avoir plus de facilité sur les autres niveaux que notre modèle sans filtre.
