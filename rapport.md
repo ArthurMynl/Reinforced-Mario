@@ -214,17 +214,17 @@ Après tests, on remarque comme présenté pendant la présentation orale que le
 Dans le cadre de notre projet, nous avons mis en place un processus d'entraînement pour un agent utilisant l'algorithme Proximal Policy Optimization (PPO), spécifiquement adapté pour le jeu "Super Mario Bros". Nous décrivons ici en détail les étapes clés et les composants de notre mise en œuvre :
 
 1. Configuration des Environnements de Jeu :
-Nous commençons par configurer les environnements de jeu en utilisant gym.make. Nous adaptons chaque environnement au contexte spécifique de "Super Mario Bros". Ensuite, comme décrit dans la partie précédente, nous prétraitons les données d'entrée pour faciliter l'apprentissage. Ainsi, nous restreignons l'espace des actions à des mouvements simples grâce à JoypadSpace et SIMPLE_MOVEMENT et nous convertissons les observations (images du jeu) en nuances de gris, les redimensionnons et les normalisons pour faciliter le traitement par notre modèle.
+Nous commençons par configurer les environnements de jeu en utilisant gym.make. Nous adaptons chaque environnement au contexte spécifique de "Super Mario Bros". Ensuite, comme décrit dans la partie précédente, nous prétraitons les données d'entrée pour faciliter l'apprentissage. Ainsi, nous restreignons l'espace des actions à des mouvements simples grâce à `JoypadSpace` et `SIMPLE_MOVEMENT` et nous convertissons les observations (images du jeu) en nuances de gris, les redimensionnons et les normalisons pour faciliter le traitement par notre modèle.
 
 2. Création d'Environnements Vectorisés :
-Nous utilisons DummyVecEnv pour créer plusieurs instances de l'environnement de jeu fonctionnant en parallèle, ce qui augmente l'efficacité de l'entraînement.
+Nous utilisons `DummyVecEnv` pour créer plusieurs instances de l'environnement de jeu fonctionnant en parallèle, ce qui augmente l'efficacité de l'entraînement.
 Nous empilons un certain nombre d'images consécutives (ici, 4) pour donner à notre modèle une perception de la dynamique temporelle.
 
 3. Configuration des Callbacks :
 Dans notre projet, nous avons intégré deux types de procédures de rappel (Callbacks) pour superviser le processus d'entraînement et pour évaluer l'efficacité de notre modèle :
 
-- Callback d'enregistrement : Nous avons mis en place TrainAndLoggingCallback, qui est programmé pour sauvegarder automatiquement l'état de notre modèle à des intervalles réguliers durant la phase d'entraînement. Cela nous permet de suivre les progrès et de conserver des points de restauration intermédiaires du modèle.
-- Callback d'évaluation : Nous utilisons également EvalCallback, qui a pour fonction principale d'apprécier la performance de notre modèle dans un environnement distinct réservé à l'évaluation. Ce processus nous aide non seulement à mesurer l'efficacité du modèle, mais également à identifier et conserver la version la plus performante du modèle au cours du temps.
+- Callback d'enregistrement : Nous avons mis en place `TrainAndLoggingCallback`, qui est programmé pour sauvegarder automatiquement l'état de notre modèle à des intervalles réguliers durant la phase d'entraînement. Cela nous permet de suivre les progrès et de conserver des points de restauration intermédiaires du modèle.
+- Callback d'évaluation : Nous utilisons également `EvalCallback`, qui a pour fonction principale d'apprécier la performance de notre modèle dans un environnement distinct réservé à l'évaluation. Ce processus nous aide non seulement à mesurer l'efficacité du modèle, mais également à identifier et conserver la version la plus performante du modèle au cours du temps.
 
 4. Chargement et Configuration du Modèle PPO :
 Nous chargeons un modèle PPO préexistant et le configurons pour utiliser nos environnements d'entraînement.
