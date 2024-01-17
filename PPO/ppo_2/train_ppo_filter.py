@@ -8,6 +8,8 @@ from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 from matplotlib import pyplot as plt
+import cv2
+import numpy as np
 import os
 
 
@@ -16,7 +18,6 @@ ENV_ID = "SuperMarioBros-v2"
 NUM_PROCESSES = 8
 CHECKPOINT_DIR = "./train"
 LOG_DIR = "./logs"
-RECORD_DIR = "./videos"
 
 
 class CannyFilterWrapper(gym.ObservationWrapper):

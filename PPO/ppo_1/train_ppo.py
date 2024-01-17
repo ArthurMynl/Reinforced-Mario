@@ -16,8 +16,6 @@ ENV_ID = "SuperMarioBros-v0"
 NUM_PROCESSES = 8
 CHECKPOINT_DIR = "./train"
 LOG_DIR = "./logs"
-RECORD_DIR = "./videos"
-
 
 def make_env(ENV_ID: str, rank: int, seed: int = None):
     """
