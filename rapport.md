@@ -203,6 +203,10 @@ Après avoir réalisé un training de plus de 10h (presque 4 000 000 d'itératio
     </figure>
 </center>
 
+Ces courbes ci-dessus représentent l'`explained_variance` durant l'apprantissage.
+Cette valeur nous permet de savoir à quel point notre modèle prédit bien ses actions. Plus l'`explained_variance` se rapproche de 1, plus sa prédiction est bonne et apporte de bons résultats. A l'inverse, plus cette valeur se rapproche de 0 et des valeurs négatives, plus notre modèle aurait de tout aussi bons voire meilleures résultats en effectuant une action aléatoire.
+Nous remarquons donc avec ces courbes, que l'`explained_variance` s'est vite améliorée au début, puis a atteint un plateau vers 500k où l'apprentissage est devenu un peu plus lent. La valeur finale étant de 0.81, la prédiction du modèle est bonne même si elle pourrait encore être améliorée.
+
 Après tests, on remarque comme présenté pendant la présentation orale que le filtre de Canny permet d'améliorer les performances de notre modèle. En effet, on remarque que le modèle converge plus rapidement (apprentissage nettement plus rapide des tuyaux à environ 200 000 itérations) et que les performances obtenues à la fin sont meilleures. Avec ce modèle, il est commun que Mario arrive à la fin du niveau 1-1, et il semble avoir plus de facilité sur les autres niveaux que notre modèle sans filtre.
 
 #### Programation
@@ -234,6 +238,10 @@ Après l'achèvement de l'entraînement, nous enregistrons le modèle final pour
 En résumé, nous avons développé un système d'entraînement sophistiqué pour un agent d'apprentissage par renforcement dans l'environnement de "Super Mario Bros", en exploitant les capacités de l'algorithme PPO. Nous avons mis l'accent sur l'efficacité de l'apprentissage grâce à la parallélisation, le prétraitement des données d'entrée, et une gestion robuste des étapes d'entraînement et d'évaluation. Cette approche assure non seulement un entraînement rapide et efficace, mais aussi une optimisation continue de la politique de l'agent, conduisant à un modèle performant et bien adapté au contexte complexe du jeu.
 
 #### Résultats
+
+Pour la méthode du  PPO sans le filtre de Canny, nous sommes allés jusqu'à 14 millions d'itérations, atteignant une `explained_variance` de 0.92 ; mais le modèle issus de l'entraînement n'a pas réussi à terminer le niveau 1-1 et sa généralisation aux autres niveaux était plutôt limitée.
+
+Cependant, l'amélioration du PPO avec un filtre de Canny a permi au second modèle de terminer le premier niveau et d'avoir une assez bonne généralisation des autres niveaux.
 
 ### DDQN
 
@@ -269,9 +277,10 @@ Le DDQN, en introduisant une séparation entre la sélection et l'évaluation de
 
 #### Nettoyage des données
 
+Comme expliqué pour le [PPO](#nettoyage-des-données-et-prétraitement)
+, nous avons néttoyé les données pour envoyer en entrée les quatre images précédentes en noir et blanc. En revanche, nous n'avons pas appliqué de filtre de Canny pour cette méthode.
 
-
-#### Programation
+#### Programmation
 
 Dans notre projet, nous avons développé et implémenté un agent utilisant l'algorithme Double Deep Q-Network (DDQN) pour jouer à "Super Mario Bros". Voici une description détaillée de notre code et de ses différentes composantes :
 
@@ -307,9 +316,52 @@ Notre implémentation du DDQN pour "Super Mario Bros" représente une approche s
 
 #### Résultats
 
+L'entraînement avec le DDQN n'a pas été complété, étant donné que la valeur de `decay_epsilon` n'a atteint que 0.5 et aurait pu continuer à diminuer jusqu'à atteindre une valeur aux alentours de 0.2.
+Bien que l'apprentissage n'ait pas été achevé, le modèle a fini le niveau 1-1 et généralisait plutôt bien les autres niveaux.
+
 ## Comparaison des résultats
 
+### Entraînement
+
+Notre première approche, basée sur le PPO, s'est révélée moins exigeante en termes de temps d'entraînement. Nous avons pu simultanément entraîner plusieurs agents, ce qui constituait un avantage par rapport DDQN. Ce dernier, en revanche, présentait une cadence d'entraînement plus lente, et la contrainte de ne pouvoir entraîner qu'un seul agent à la fois rendait le processus d'apprentissage plus lent.
+
+Quant à l'application du filtre de Canny à la méthode PPO, cette inclusion n'a pas engendré de ralentissement notable de la phase d'entraînement par rapport à l'utilisation du PPO sans l'ajout du filtre.
+
+### Résultats
+
+En ce qui concerne les résultats, le modèle issu du PPO a montré des difficultés à compléter le niveau 1 et présentait une généralisation relativement faible aux autres niveaux. En revanche, les modèles issus de l'application du PPO avec le filtre de Canny et du DDQN ont terminé le niveau 1, et se sont avérés être plus efficaces dans la généralisation aux autres niveaux.
+
 ## Discussion et ouverture
+
+### Difficultés rencontrées
+
+Tout au long de notre projet, nous avons rencontré plusieurs difficultés.
+
+Les premières étaient l'installation de l'environnement et des différents outils pour entamer notre projet, que ce soit l'installation des librairies pour l'environnement de gym-super-mario-bros, ou d'autres outils comme CUDA et pytorch pour utiliser notre carte graphique lors de l'apprentissage.
+
+La principale autre difficulté était l'entraînement de nos modèles.
+En effet, la puissance de calcul demandée par ce processus prenait beaucoup des ressources de nos ordinateurs (par exemple 27 Go de RAM sur 32) et les entraînements étaient longs.
+
+En concéquence de ces entraînements longs, nous avons également eu du mal à réaliser les différentes méthodes et améliorations que nous avions en tête.
+
+### Potentielles améliorations
+1. Filtre de Canny avec le DDQN
+
+Puisque nous avons constaté de meilleurs résultats lorsque nous avons appliqué un filtre de Canny aux données d'entrée du PPO, appliquer ce même filtre aux données d'entrée du DDQN pourrait donner un encore meilleur résultat que celui du DDQN seul.
+
+2. Essayer le Frame skipping (saut d'images).
+
+Cette méthode permettrait à notre agent de ne pas prendre d'action à chaque frame (image) mais par exemple une frame sur quatre. En sautant des images, on peut donc réduire le nombre d'observations traitées, ce qui permet d'accélérer l'entraînement tout en conservant une information suffisante pour prendre des décisions pertinentes (car l'information entre les images successives ne change pas de manière significative).
+
+3. Temps d'entraînement plus long.
+
+Nos méthodes auraient pu avoir de meilleurs résultats avec des temps d'entraînements encore plus, notamment pour la méthode du DDQN qui avait encore un grand taux d'exploration.
+
+4. Entraînement sur différents niveaux de manière aléatoire.
+
+Pendant nos différents entraînements, Mario s'est toujours entraîné sur le premier niveau du premier monde, et bien que dans certains cas il réussissait à finir le niveau, il avait plus de mal à aller loin dans les autres niveaux.
+Une alternative serait donc qu'il soit entraîné sur un niveau aléatoire à chaque itération, pour que sa méthode soit adapté à n'importe quel environnement de jeu.
+
 
 ## Bibliographie
 
